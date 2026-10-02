@@ -120,6 +120,62 @@ https://localhost:5001/
 
 or the local port assigned by the ASP.NET Core development server.
 
+## IIS Deployment
+
+This application can be deployed to IIS on a Windows server, but it must be configured to access a real SQL Server instance. The app does not work reliably with LocalDB in a hosted IIS environment.
+
+### Prerequisites
+
+- Windows Server with IIS enabled
+- .NET 10 Hosting Bundle installed
+- SQL Server or Azure SQL available to the server
+- A valid HTTPS certificate for the site
+
+### Publish the app
+
+```bash
+dotnet publish -c Release -o C:\Publish\mentalhealthjournal
+```
+
+### Configure IIS
+
+1. Open IIS Manager.
+2. Create a new site or application pool.
+3. Set the physical path to `C:\Publish\mentalhealthjournal`.
+4. Use an application pool with:
+   - Managed pipeline: Integrated
+   - .NET CLR Version: No Managed Code
+5. Bind the site to HTTPS and assign a certificate.
+
+### Update the connection string
+
+Set the connection string to a production SQL Server value:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=YOUR_SQL_SERVER;Database=mentalhealthjournal;User Id=YOUR_USER;Password=YOUR_PASSWORD;TrustServerCertificate=True;"
+  }
+}
+```
+
+### Important server requirements
+
+- The application pool identity needs permission to access the publish folder.
+- The SQL Server must accept connections from the IIS server.
+- The app will run `Database.Migrate()` on startup, so the database must exist and be accessible.
+
+### Troubleshooting IIS
+
+Common issues include:
+
+- missing .NET 10 Hosting Bundle
+- SQL Server firewall or authentication problems
+- incorrect connection string or database permissions
+- invalid HTTPS binding
+
+Check the Windows Event Viewer and ASP.NET Core logs if the site fails to start.
+
 ## Default Route
 
 The app is configured with the following default route:
