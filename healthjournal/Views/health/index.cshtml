@@ -1,0 +1,43 @@
+@model IEnumerable<healthjournal.Models.HealthModel>
+
+<h2>Health Journal</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label class="form-label" for="Name">Name</label>
+        <input id="Name" name="Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="Description">Description</label>
+        <textarea id="Description" name="Description" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="Date">Date</label>
+        <input id="Date" name="Date" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Entry</button>
+</form>
+
+<hr />
+
+@if (Model != null && Model.Any())
+{
+    <h3>Previous Entries</h3>
+    <ul class="list-group">
+        @foreach (var entry in Model)
+        {
+            <li class="list-group-item">
+                <strong>@entry.Name</strong>
+                <div>@entry.Description</div>
+                <small>@entry.Date.ToShortDateString()</small>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No health entries yet.</p>
+}
